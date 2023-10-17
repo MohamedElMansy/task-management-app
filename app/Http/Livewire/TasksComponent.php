@@ -178,7 +178,7 @@ class TasksComponent extends Component
         $query = Task::where(function ($query) {
             $query->where('title', 'like', '%'.$this->searchTerm.'%')
                 ->orWhere('status', 'like', $this->searchTerm.'%')
-                ->orWhere('task_id', 'like', '%'.$this->searchTerm.'%')
+                ->orWhere('due_date', 'like', '%'.$this->searchTerm.'%')
                 ->orWhere('description', 'like', '%'.$this->searchTerm.'%');
         });
         
