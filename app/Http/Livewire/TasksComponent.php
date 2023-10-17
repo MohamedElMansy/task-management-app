@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Task;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class TasksComponent extends Component
@@ -44,7 +45,7 @@ class TasksComponent extends Component
         $task->status = $this->status;
         $task->description = $this->description;
         $task->due_date = $this->due_date;
-        $task->user_id = 1;        //Auth::id(); until apply auth
+        $task->user_id = Auth::id();        
         $task->save();
 
         session()->flash('message', 'New task addedd Successfully.');
@@ -172,12 +173,20 @@ class TasksComponent extends Component
 
     public function render()
     {
-        //Get all task
-        $tasks = Task::where('title', 'like', '%'.$this->searchTerm.'%')
-        ->orWhere('status', 'like', $this->searchTerm.'%')
-        ->orWhere('task_id', 'like', '%'.$this->searchTerm.'%')
-        ->orWhere('description', 'like', '%'.$this->searchTerm.'%')
-        ->get();
+        //Get all task depend on user rule is_admin
+        $user = auth()->user();
+        $query = Task::where(function ($query) {
+            $query->where('title', 'like', '%'.$this->searchTerm.'%')
+                ->orWhere('status', 'like', $this->searchTerm.'%')
+                ->orWhere('task_id', 'like', '%'.$this->searchTerm.'%')
+                ->orWhere('description', 'like', '%'.$this->searchTerm.'%');
+        });
+        
+        if ($user->is_admin) {
+            $tasks = $query->get();
+        } else {
+            $tasks = $query->where('user_id', $user->id)->get();
+        }
 
         return view('livewire.tasks-component', ['tasks'=>$tasks])->layout('livewire.layouts.base');
     }
