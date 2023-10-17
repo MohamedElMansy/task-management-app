@@ -34,3 +34,13 @@ Run admin seeder to create the admin
 
     php artisan db:seed --class=AdminSeeder
 
+Start the local development server
+
+    php artisan serve
+
+You can now access the server at http://localhost:8000/tasks
+
+Note*
+Admin credentials
+email -> admin@example.com
+password -> 123 
